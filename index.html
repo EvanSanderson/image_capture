@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <video id="player" controls autoplay></video>
+    <button id="capture">Capture</button>
+    <canvas id="canvas" width=320 height=240></canvas>
+    <a href="" id="link" style="display: none;" download></a>
+    <div id="div">Drop here</div>
+
+    <script>
+      const player = document.getElementById('player');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('capture');
+        const constraints = {
+            video: true,
+        };
+
+        captureButton.addEventListener('click', () => {
+            context.drawImage(player, 0, 0, canvas.width, canvas.height);
+                player.srcObject.getVideoTracks().forEach(track => track.stop());
+                    const image = canvas.toDataURL('image/jpeg', 1.0);
+                    console.log(image);
+                    downloadImage(image);
+        });
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then((stream) => {
+                player.srcObject = stream;
+            })
+
+        function downloadImage(image){
+            const link = document.getElementById('link');
+            link.setAttribute('href', image);
+            link.click();
+        }
+
+        const target = document.getElementById('target');
+
+            target.addEventListener('drop', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                console.log(e.dataTransfer.files);
+            });
+
+            target.addEventListener('dragover', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                e.dataTransfer.dropEffect = 'copy';
+            });
+    </script>
+</body>
+</html>
